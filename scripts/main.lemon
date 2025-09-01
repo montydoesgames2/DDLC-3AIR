@@ -1,0 +1,54 @@
+include chardata
+include script
+include menu
+
+function void beginVN()
+{
+Renderer.setScreenSize(1024, 576)
+u8 effecttimer
+u16 textscrolltimer
+u32 dialogueline
+Audio.playAudio("ddlc2", AudioContext.CONTEXT_MUSIC)
+	while (true)
+	{
+		Renderer.resetSprites()
+		DrawBG("residential")
+		DrawTextBox(SpeakerCh0[dialogueline], DialogueCh0[dialogueline], false)
+		DrawCharacter(1, CharLCh0[dialogueline], ExprLCh0[dialogueline])
+		DrawCharacter(2, CharCCh0[dialogueline], ExprCCh0[dialogueline])
+		DrawCharacter(3, CharRCh0[dialogueline], ExprRCh0[dialogueline])
+		++effecttimer
+		++textscrolltimer
+		if Input.buttonPressed(BUTTON_A)
+		{
+			++dialogueline
+			effecttimer = 0
+			textscrolltimer = 0
+		}
+		waitForNextFrame()
+	}
+}
+
+function void DrawBG(string bg)
+{
+	Renderer.drawSpriteTinted(bg, 0, 0, 0, 0, 0x1000, 0, 0xffffffff, 0.8f)
+}
+
+function void DrawTextBox(u8 character, string text, bool ContinueArrow)
+{
+	if character
+	{
+		Renderer.drawSpriteTinted("textbox_name", 185, 428, 0, 0, 0x4000, 0, 0xffffffff, 0.8f)
+		Renderer.drawText("oxyfont_regular:outline(0xbb5599ff,2,false)", 252, 436, DDLCCharName[character - 1], 0xffffffff, 2, 2, 0x4001, false)
+		text = stringformat("\"%s\"", text)
+	}
+
+	Renderer.drawSpriteTinted("textbox", 185, 459, 0, 0, 0x4000, 0, 0xffffffff, 0.8f)
+	Renderer.drawText("oxyfont_regular:outline(0x000000ff,2,false)", 200, 473, text, 0xffffffff, 1, 2, 0x4001, false)
+
+	if ContinueArrow
+	{
+		Renderer.drawSpriteTinted("@input_icon_button_A", 800, 564, 0, 0, 0x4002, 0, 0xffffffff, 1.0f)
+		Renderer.drawSpriteTinted("nexttextbox", 810, 556, 0, 0, 0x4002, 0, 0xffffffff, 0.8f)
+	}
+}

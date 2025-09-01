@@ -1,0 +1,279 @@
+include chardata
+include script
+
+function void EntryFunctions.dataSelect()
+{
+	Audio.fadeOutChannel(0, 1.0f)
+	gotoMenu()
+}
+
+function void gotoMenu()
+{
+	Renderer.setScreenSize(1024, 576)
+	Disclaimer()
+}
+
+constant array<string> DISCLAIMERTEXT =
+{
+	"Doki Doki Literature Club: AIRPort is a fan-made modifcation of Sonic the\nHedgehog 3: Angel Island Revisited, and is not in any way affiliated with SEGA,\nSonic Team, or Team Salvato.",
+    "It is highly recommended that you play or the original Doki Doki Literature Club\nbefore playing this mod.",
+	"This modifcation of Sonic the Hedgehog 3: Angel Island Revisited is not suitable\nfor children or those who are easily disturbed.",
+    "Individuals suffering from anxiety or depression may not have a safe experience\nplaying this game. For content warnings, please visit:\nhttp://ddlc.moe/warning.html",
+    "Due to the nature of the original game's content, some versions of this mod may\nalter elements of the game to fit the rules of distribution for the site you\nobtained it from. This includes certain heavy topics and vulgar language. If\ncertain events do not match the original or are toned down to any degree, this\nis likely why.",
+    "By playing this recreation of Doki Doki Literature Club, you agree that you are\nat least 13 years of age, and you consent to your exposure of highly disturbing\ncontent."
+}
+
+function void Disclaimer()
+{
+	u8[0x800000] = System.loadPersistentData(0x800000, 1, "DDLC_GlobalData", "DisclaimerSeen", false)
+
+	if (u8[0x800000] == 1)
+		jump @DiscSkip
+
+Input.setControllerLEDs(0, 0)
+u8 opacity = 0xff
+u8 dialogueline
+	while (opacity > 0)
+	{
+		Renderer.resetSprites()
+
+		Renderer.drawSpriteTinted("disclaimer1", 0, 0, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		Renderer.drawSpriteTinted("disclaimer2", 0, 0, 0, 0, 0x1000, 0, 0xffffffff, 0.8f)
+
+		if DISCLAIMERTEXT[dialogueline] != ""
+		DrawTextBox(0, DISCLAIMERTEXT[dialogueline], (dialogueline != 5))
+
+		if dialogueline == 5
+		{
+			Renderer.drawSpriteTinted("choicebg_sel", getScreenWidth() / 2 - 160, 200, 0, 0, 0x4000, 0, 0xffffffff, 0.8f)
+			Renderer.drawSpriteTinted("@input_icon_button_A", getScreenWidth() / 2 + 140, 215, 0, 0, 0x4002, 0, 0xffffffff, 2.0f)
+			Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, 208, "I agree.", 0x000000ff, 2, 0, 0x4001, false)
+		}
+
+		if DISCLAIMERTEXT[dialogueline] == ""
+			--opacity
+
+		if Input.buttonPressed(BUTTON_A)
+		{
+			++dialogueline
+			if dialogueline == 6
+			{
+				Audio.playAudio("guiselect", AudioContext.CONTEXT_SOUND)
+				u8[0x800000] = 1
+				System.savePersistentData(0x800000, 1, "DDLC_GlobalData", "DisclaimerSeen", false)
+			}
+		}
+
+		
+		waitForNextFrame()
+	}
+
+	u16 waittimer
+	while (waittimer < 120)
+	{
+		Renderer.resetSprites()
+		Renderer.drawSpriteTinted("disclaimer2", 0, 0, 0, 0, 0x1000, 0, 0xffffffff, 0.8f)
+		++waittimer
+		waitForNextFrame()
+	}
+
+	@DiscSkip:
+
+	Audio.playAudio("ddlc1", AudioContext.CONTEXT_MUSIC)
+	SplashScreen()
+}
+
+function void SplashScreen()
+{
+u8 opacity
+u16 timer
+
+	while (opacity < 0xff)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("splash", 0, 0, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		opacity += 5
+		waitForNextFrame()
+	}
+
+	while (timer < 60)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("splash", 0, 0, 0, 0, 0x1001, 0, 0xffffffff, 0.8f)
+		++timer
+		waitForNextFrame()
+	}
+
+	timer = 0
+
+	while (opacity > 0)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("splash", 0, 0, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		opacity -= 5
+		waitForNextFrame()
+	}
+
+	while (opacity < 0xff)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 - 10, "This game is not for children", u32(opacity), 2, 0, 0x1001, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 + 10, "or those who are easily disturbed.", u32(opacity), 2, 0, 0x1001, false)
+		opacity += 5
+		waitForNextFrame()
+	}
+
+	while (timer < 60)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 - 10, "This game is not for children", 0x000000ff, 2, 0, 0x1001, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 + 10, "or those who are easily disturbed.", 0x000000ff, 2, 0, 0x1001, false)
+		++timer
+		waitForNextFrame()
+	}
+
+	timer = 0
+
+	while (opacity > 0)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 - 10, "This game is not for children", u32(opacity), 2, 0, 0x1001, false)
+		Renderer.drawText("oxyfont_regular", getScreenWidth() / 2, getScreenHeight() / 2 + 10, "or those who are easily disturbed.", u32(opacity), 2, 0, 0x1001, false)
+		opacity -= 5
+		waitForNextFrame()
+	}
+
+	while (timer < 60)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		++timer
+		waitForNextFrame()
+	}
+
+	DokiTitle()
+
+}
+
+function void DokiTitle()
+{
+u8 opacity
+u16 bgscrollx = 80
+u16 bgscrolly = 80
+
+Input.setControllerLEDs(0, 0xfeb8d4)
+
+	while (opacity < 0xff)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("menu_bg", -80 + bgscrollx, -80 + bgscrolly, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		opacity += 5
+
+		if bgscrollx == 0
+			bgscrollx = 80
+		else
+			--bgscrollx
+
+		if bgscrolly == 0
+			bgscrolly = 80
+		else
+			--bgscrolly
+
+		waitForNextFrame()
+	}
+
+s16 positionmen = -400
+s16 pos = getScreenHeight()
+float size = 0.25f
+
+float xoffSay = (740 - 510) * 0.68f * 0.5f
+float xoffYur = (740 - 600) * 0.54f * 0.5f
+float xoffNat = (740 - 750) * 0.58f * 0.5f
+float xoffMon = (740 - 1000) * 0.5f
+
+u8 timer = 0
+	while (positionmen != 0) || (pos != 0) || (Math.roundToInt(xoffMon) != 0)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("menu_bg", -80 + bgscrollx, -80 + bgscrolly, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		Renderer.drawSpriteTinted("menu_main", positionmen, 0, 0, 0, 0x4000, 0, 0xffffffff, 0.8f)
+
+		Renderer.drawSpriteTinted("menu_s", 296 + Math.roundToInt(xoffSay), 107 + pos, 0, 0, 0x3002, 0, 0xffffffff, 0.68f * 0.8f - size)
+		Renderer.drawSpriteTinted("menu_y", 365 + Math.roundToInt(xoffYur), 9 + pos, 0, 0, 0x3000, 0, 0xffffffff, 0.6f * 0.8f - size)
+		Renderer.drawSpriteTinted("menu_n", 508 + Math.roundToInt(xoffNat), 58 + pos, 0, 0, 0x3001, 0, 0xffffffff, 0.58f * 0.8f - size)
+		Renderer.drawSpriteTinted("menu_m", 560 + Math.roundToInt(xoffMon), 80 + pos, 0, 0, 0x3003, 0, 0xffffffff, 0.8f - size)
+
+		if bgscrollx == 0
+			bgscrollx = 80
+		else
+			--bgscrollx
+
+		if bgscrolly == 0
+			bgscrolly = 80
+		else
+			--bgscrolly
+
+			pos = (getScreenHeight() / 2) + Math.roundToInt(((getScreenHeight() / 2) * Math.cos(((timer / 65.0f) * PI_FLOAT) / 2)))
+
+debugLog(stringformat("%d", pos))
+		if (timer <= 100)
+			positionmen = -400 + (Math.roundToInt(400 * Math.cos((((100 - timer) / 100.0f) * PI_FLOAT) / 2)))
+
+		if (timer >= 30) && (Math.roundToInt(xoffMon) != 0)
+		{
+			if (size > 0)
+				size = Math.cos((((timer - 30) / 45.0f) * PI_FLOAT / 4)) * 0.25f
+			else
+				size = 0
+
+				xoffSay = ((740 - 510) * 0.68f * 0.5f) * Math.cos((((timer - 30) / 45.0f) * PI_FLOAT) / 4)
+				xoffYur = ((740 - 600) * 0.54f * 0.5f) * Math.cos((((timer - 30) / 45.0f) * PI_FLOAT) / 4)
+				xoffNat = ((740 - 750) * 0.58f * 0.5f) * Math.cos((((timer - 30) / 45.0f) * PI_FLOAT) / 4)
+				xoffMon = ((740 - 1000) * 0.5f) * Math.cos((((timer - 30) / 45.0f) * PI_FLOAT) / 4)
+		}
+
+		++timer
+
+		//debugLog(size)
+
+
+		waitForNextFrame()
+	}
+
+	while (true)
+	{
+		Renderer.resetSprites()
+		Renderer.drawRect(0, 0, getScreenWidth(), getScreenHeight(), 0xffffffff, 0x1000, false)
+		Renderer.drawSpriteTinted("menu_bg", -80 + bgscrollx, -80 + bgscrolly, 0, 0, 0x1001, 0, u32(0xffffff00 + opacity), 0.8f)
+		Renderer.drawSpriteTinted("menu_main", 0, 0, 0, 0, 0x4000, 0, 0xffffffff, 0.8f)
+		Renderer.drawSpriteTinted("menu_logo", 69, -27, 0, 0, 0x4001, 0, 0xffffffff, 0.6f * 0.8f)
+
+		Renderer.drawSpriteTinted("menu_s", 296, 107, 0, 0, 0x3002, 0, 0xffffffff, 0.68f * 0.8f)
+		Renderer.drawSpriteTinted("menu_y", 365, 9, 0, 0, 0x3000, 0, 0xffffffff, 0.6f * 0.8f)
+		Renderer.drawSpriteTinted("menu_n", 508, 58, 0, 0, 0x3001, 0, 0xffffffff, 0.58f * 0.8f)
+		Renderer.drawSpriteTinted("menu_m", 560, 80, 0, 0, 0x3003, 0, 0xffffffff, 0.8f)
+
+		if bgscrollx == 0
+			bgscrollx = 80
+		else
+			--bgscrollx
+
+		if bgscrolly == 0
+			bgscrolly = 80
+		else
+			--bgscrolly
+
+		if Input.buttonPressed(BUTTON_A)
+			Game.returnToMainMenu()
+
+		waitForNextFrame()
+	}
+}

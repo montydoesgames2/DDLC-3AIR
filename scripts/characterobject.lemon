@@ -1,0 +1,25 @@
+// Defines
+define me.update_address		=  u32[A0]
+define me.name					=  u64[A0 + 0x04]
+define me.emotion				=  u8[A0 + 0x0b]
+define me.pose					=  u8[A0 + 0x0c]
+define me.position.x			=  u16[A0 + 0x0d]
+define me.position.y			=  u16[A0 + 0x0f]
+define me.colourtint			=  u32[A0 + 0x11]
+define me.action				=  u8[A0 + 0x15]
+
+//# address-hook(add one here later) end(add one here later)
+function void VNChar.Init()
+{
+	// All initialised characters are invisible with a question mark name just for ease of management
+	me.name = "???"
+	me.colourtint = 0x00ffffff
+	me.update_address = addressof(VNChar.Update)
+}
+
+
+//# address-hook(add one here later) end(add one here later)
+function void VNChar.Update()
+{
+	// Tell Monty to code this later.
+}
