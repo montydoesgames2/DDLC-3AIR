@@ -1,0 +1,6 @@
+{
+	"disclaimer1": { "File": "../images.rpa/images/bg/warning.png" },
+	"disclaimer2": { "File": "../images.rpa/images/bg/warning2.png" },
+	"splash": { "File": "../images.rpa/images/bg/splash.png" },
+	"residential": { "File": "../images.rpa/images/bg/residential.png" },
+}

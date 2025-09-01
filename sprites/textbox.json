@@ -1,0 +1,7 @@
+{
+	"textbox_name":	  { "File": "../images.rpa/gui/namebox.png" },
+	"textbox":	  { "File": "../images.rpa/gui/textbox.png" },
+	"choicebg_sel": { "File": "../images.rpa/gui/button/choice_hover_background.png" },
+	"choicebg": { "File": "../images.rpa/gui/button/choice_idle_background.png" },
+	"nexttextbox": { "File": "../images.rpa/gui/ctc.png" }
+}
