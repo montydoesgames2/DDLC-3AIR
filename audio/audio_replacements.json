@@ -1,0 +1,4 @@
+{
+	"guiselect":      { "File": "../audio.rpa/gui/sfx/select.ogg", "Type": "Sound" },
+	"ddlc1":      { "File": "../audio.rpa/bgm/1.ogg", "Type": "Music" },
+}
